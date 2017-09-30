@@ -6,7 +6,7 @@ public class StarScript : MonoBehaviour {
 
 	public float speed, fallSpeed, force;
 
-	public GameObject owner, stage, enemy, otherStar;
+	public GameObject owner, stage, enemy, otherStar, camera;
 	public PlayerScript enemyScript;
 
 	Collider2D coll, ownerColl, enemyColl, stageColl;
@@ -46,6 +46,12 @@ public class StarScript : MonoBehaviour {
 				isFalling = true;
 				dy = -fallSpeed;
 			}
+
+			Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+			if (pos.x <= 0.0 || 1.0 <= pos.x) {
+				direction *= -1;
+				this.transform.position += (throwVector * direction);
+			}
 		} else if (isFalling) {
 			this.transform.position += new Vector3(0, dy, 0);
 			if (coll.IsTouching(stageColl)) {
@@ -60,14 +66,12 @@ public class StarScript : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D col){
-		Rigidbody2D rbNinja = enemy.GetComponent<Rigidbody2D>();
-		Debug.Log ("Shuriken hit");
-
-		if (col.gameObject == enemy) { // account for falling star
+		if (col.gameObject == enemy) {
 			enemyScript.KnockBack(direction);
-			Debug.Log ("Velocity has been changed");
 		}
-
+		if (col.gameObject == otherStar) {
+			direction *= -1;
+		}
 	}
 
 	public void Throw() {
