@@ -226,7 +226,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1237691647
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: de09df6cdf6f543bfac67a17c6e1205e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -299,6 +299,7 @@ MonoBehaviour:
   gravity: 0.006
   otherNinja: {fileID: 1708447889}
   stage: {fileID: 1813810197}
+  star: {fileID: 1848951266}
 --- !u!1 &1477510401
 GameObject:
   m_ObjectHideFlags: 0
@@ -309,6 +310,8 @@ GameObject:
   - component: {fileID: 1477510404}
   - component: {fileID: 1477510403}
   - component: {fileID: 1477510402}
+  - component: {fileID: 1477510406}
+  - component: {fileID: 1477510405}
   m_Layer: 0
   m_Name: bluestar
   m_TagString: Untagged
@@ -362,7 +365,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1303285597
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 388d74feeded8409690c8e7267842c2d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -375,12 +378,44 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1477510401}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.1, y: 0.68999994, z: 0}
+  m_LocalPosition: {x: 3.13, y: 0.64, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1477510405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1477510401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60f0132d954e440e5a5fe148244f5bbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0.12
+  owner: {fileID: 1708447889}
+  stage: {fileID: 1813810197}
+  enemy: {fileID: 1022738311}
+  otherStar: {fileID: 1848951262}
+  ownerScript: {fileID: 1708447894}
+  enemyScript: {fileID: 1022738316}
+--- !u!58 &1477510406
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1477510401}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.04
 --- !u!1 &1708447889
 GameObject:
   m_ObjectHideFlags: 0
@@ -429,7 +464,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1237691647
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8ffc221eb8feb458cb11701aaa1e99e9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -502,6 +537,7 @@ MonoBehaviour:
   gravity: 0.006
   otherNinja: {fileID: 1022738311}
   stage: {fileID: 1813810197}
+  star: {fileID: 1477510405}
 --- !u!1 &1813810197
 GameObject:
   m_ObjectHideFlags: 0
@@ -548,7 +584,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
+  m_SortingLayerID: -374391133
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 7f62dac92ac684584a01e4b4aaaeb778, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -600,6 +636,8 @@ GameObject:
   - component: {fileID: 1848951265}
   - component: {fileID: 1848951264}
   - component: {fileID: 1848951263}
+  - component: {fileID: 1848951267}
+  - component: {fileID: 1848951266}
   m_Layer: 0
   m_Name: redstar
   m_TagString: Untagged
@@ -653,7 +691,7 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
+  m_SortingLayerID: -1303285597
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: f63a266efbc0040cd9d290dc922a87fe, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -666,9 +704,41 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1848951262}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.34, y: 0.6999999, z: 0}
+  m_LocalPosition: {x: -3.26, y: 0.71, z: 0}
   m_LocalScale: {x: 6, y: 6, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1848951266
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1848951262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60f0132d954e440e5a5fe148244f5bbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 0.12
+  owner: {fileID: 1022738311}
+  stage: {fileID: 1813810197}
+  enemy: {fileID: 1708447889}
+  otherStar: {fileID: 1477510401}
+  ownerScript: {fileID: 1022738316}
+  enemyScript: {fileID: 1708447894}
+--- !u!58 &1848951267
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1848951262}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.04

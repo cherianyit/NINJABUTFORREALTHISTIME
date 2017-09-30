@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Ninjas
+    uniqueID: 3057275649
+    locked: 0
+  - name: Stage
+    uniqueID: 3920576163
+    locked: 0
+  - name: Stars
+    uniqueID: 2991681699
+    locked: 0

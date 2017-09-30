@@ -8,6 +8,7 @@ public class PlayerScript : MonoBehaviour {
 	public float speed, jumpForce, gravity;
 
 	public GameObject otherNinja, stage;
+	public StarScript star;
 
 	Rigidbody2D rb;
 	BoxCollider2D coll;
@@ -15,7 +16,7 @@ public class PlayerScript : MonoBehaviour {
 
 	Collider2D otherColl, stageColl;
 
-	bool isJumping;
+	bool isJumping = false, isHolding = true;
 
 	float dx, dy;
 
@@ -33,6 +34,7 @@ public class PlayerScript : MonoBehaviour {
 	void Update () {
 		MoveAndCollide();
 		Jump();
+		Throw();
 	}
 
 	void MoveAndCollide() {
@@ -78,6 +80,13 @@ public class PlayerScript : MonoBehaviour {
 				isJumping = false;
 				dy = 0;
 			}
+		}
+	}
+
+	void Throw() {
+		if (Input.GetKey(down) && isHolding) {
+			isHolding = false;
+			star.Throw();
 		}
 	}
 }
