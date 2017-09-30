@@ -51,26 +51,24 @@ public class PlayerScript : MonoBehaviour {
 			}
 		}
 
-		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-
 		Death();
-		/*if (pos.y <= 0.0 || 1.0 <= pos.y) {
-			this.transform.position = (initialPosition + otherNinjaScript.GetInitialPosition()) / 2;
-			lives--;
-		}*/
 	}
 
 	public void Death(){
-		if (tf.position.y < -9 | tf.position.x< -10 | tf.position.x > 10) {
+		if ((tf.position.y < -9 || tf.position.x< -10 || tf.position.x > 10) && (lives > 0)) {
 			lives--;
 			timesKnockedBack = 0;
 			tf.position = (initialPosition + otherNinjaScript.GetInitialPosition()) / 2;
 			ninjaDied = true;
+			if (lives <= 0) {
+				this.GetComponent<SpriteRenderer>().enabled = false;
+				transform.position = new Vector3(100, 100, 100);
+			}
 		}
 	}
 
 	void MoveAndCollide() {
-		if (!isKnockedBack) {
+		if (!isKnockedBack && lives > 0) {
 			if (Input.GetKey(left)) {
 				this.transform.localScale = new Vector3(-6, 6, 1);
 				if (coll.IsTouching(otherColl) && otherNinja.transform.position.x < tf.position.x

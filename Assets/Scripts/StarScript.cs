@@ -38,7 +38,6 @@ public class StarScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(owner.GetComponent<PlayerScript>().ninjaDied){
-			Debug.Log ("Owner has died");
 			isHeld = true;
 			owner.GetComponent<PlayerScript>().ninjaDied = false;
 			lastPos = owner.GetComponent<PlayerScript>().GetInitialPosition() + (offset * direction);
