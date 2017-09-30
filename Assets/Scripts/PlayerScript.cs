@@ -18,6 +18,10 @@ public class PlayerScript : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		MoveAndCollide();
+	}
+
+	void MoveAndCollide() {
 		if (Input.GetKey(left)) {
 			this.transform.localScale = new Vector3(-6, 6, 1);
 			if (this.GetComponent<Collider2D>().IsTouching(otherNinja.GetComponent<Collider2D>()) 
@@ -40,11 +44,5 @@ public class PlayerScript : MonoBehaviour {
 			dx = 0;
 		}
 		this.transform.position += new Vector3(dx, 0, 0);
-	}
-
-	void OnCollisionEnter2D(Collision2D coll) {
-		if (coll.gameObject == otherNinja) {
-			Debug.Log("test");
-		}
 	}
 }
