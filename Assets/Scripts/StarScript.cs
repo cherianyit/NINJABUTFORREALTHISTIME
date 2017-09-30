@@ -11,11 +11,14 @@ public class StarScript : MonoBehaviour {
 
 	Collider2D coll, ownerColl, enemyColl, stageColl;
 
+	Rigidbody2D rb;
+
 	bool isHeld = true, isThrown = false, isFalling = false;
 	int direction;
 	float dx, dy;
 
-	Vector3 offset, throwVector;
+	Vector3 offset, throwVector, lastPos;
+	Vector2 zero;
 
 	// Use this for initialization
 	void Start () {
@@ -23,6 +26,8 @@ public class StarScript : MonoBehaviour {
 		float ownerWidth = Mathf.Abs(owner.transform.localScale.x) * owner.GetComponent<BoxCollider2D>().size.x;
 		offset = new Vector3(ownerWidth / 2.0f + radius, 0, 0);
 		throwVector = new Vector3(speed, 0, 0);
+		rb = this.GetComponent<Rigidbody2D>();
+		zero = new Vector2(0, 0);
 
 		coll = this.GetComponent<Collider2D>();
 		ownerColl = owner.GetComponent<Collider2D>();
@@ -32,6 +37,13 @@ public class StarScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		if(owner.GetComponent<PlayerScript>().ninjaDied){
+			Debug.Log ("Owner has died");
+			isHeld = true;
+			owner.GetComponent<PlayerScript>().ninjaDied = false;
+			lastPos = owner.GetComponent<PlayerScript>().GetInitialPosition() + (offset * direction);
+		}
+
 		if (isHeld) {
 			direction = (int)Mathf.Sign(owner.transform.localScale.x);
 			this.GetComponent<Collider2D>().enabled = false;
@@ -53,15 +65,22 @@ public class StarScript : MonoBehaviour {
 				isFalling = false;
 				dy = 0;
 			}
+		} else {
+			transform.position = lastPos;
+			if (lastPos.y < transform.position.y && !(coll.IsTouching(stageColl))) {
+				transform.position = new Vector3(transform.position.x, lastPos.y, transform.position.z);
+			}
 		}
 
 		if (!isHeld && coll.IsTouching(ownerColl)) {
 			Retrieve();
 		}
+		
+		lastPos = transform.position;
 	}
 
 	void OnCollisionEnter2D(Collision2D col){
-		if (col.gameObject == enemy) {
+		if (col.gameObject == enemy && isThrown) {
 			isThrown = false;
 			isFalling = true;
 			dy = -fallSpeed;
@@ -85,5 +104,8 @@ public class StarScript : MonoBehaviour {
 		isHeld = true;
 		isThrown = false;
 		isFalling = false;
+		this.GetComponent<SpriteRenderer>().enabled = false;
+		lastPos = owner.GetComponent<PlayerScript>().transform.position + (offset * direction);
+		transform.position = lastPos;
 	}
 }

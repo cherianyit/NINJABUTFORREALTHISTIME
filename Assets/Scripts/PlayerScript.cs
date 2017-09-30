@@ -7,14 +7,16 @@ public class PlayerScript : MonoBehaviour {
 	public string left, right, up, down;
 	public float speed, jumpForce, gravity, knockback, knockbackSpeed;
 
-	public GameObject otherNinja, stage;
+	public GameObject otherNinja, stage, enemyStar;
 	public PlayerScript otherNinjaScript;
 	public StarScript star;
+
+	public bool ninjaDied = false;
 
 	BoxCollider2D coll;
 	Transform tf;
 
-	Collider2D otherColl, stageColl;
+	Collider2D otherColl, stageColl, enemyStarColl;
 
 	bool isJumping = false, isKnockedBack = false, knockbackRight;
 	int timesKnockedBack = 0;
@@ -32,6 +34,7 @@ public class PlayerScript : MonoBehaviour {
 
 		otherColl = otherNinja.GetComponent<Collider2D>();
 		stageColl = stage.GetComponent<Collider2D>();
+		enemyStarColl = enemyStar.GetComponent<Collider2D>();
 	}
 	
 	// Update is called once per frame
@@ -49,9 +52,20 @@ public class PlayerScript : MonoBehaviour {
 		}
 
 		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
-		if (pos.y <= 0.0 || 1.0 <= pos.y) {
+
+		Death();
+		/*if (pos.y <= 0.0 || 1.0 <= pos.y) {
 			this.transform.position = (initialPosition + otherNinjaScript.GetInitialPosition()) / 2;
 			lives--;
+		}*/
+	}
+
+	public void Death(){
+		if (tf.position.y < -9 | tf.position.x< -10 | tf.position.x > 10) {
+			lives--;
+			timesKnockedBack = 0;
+			tf.position = (initialPosition + otherNinjaScript.GetInitialPosition()) / 2;
+			ninjaDied = true;
 		}
 	}
 
@@ -85,7 +99,7 @@ public class PlayerScript : MonoBehaviour {
 				dx = 0;
 			}
 			if (Input.GetKey(up) && !isJumping && (coll.IsTouching(stageColl)
-			   || (coll.IsTouching(otherColl)))) {
+				|| coll.IsTouching(otherColl) || coll.IsTouching(enemyStarColl))) {
 				isJumping = true;
 				dy = jumpForce;
 			}
