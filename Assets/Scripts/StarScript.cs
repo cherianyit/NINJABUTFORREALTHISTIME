@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class StarScript : MonoBehaviour {
 
-	public float speed;
+	public float speed, fallSpeed, force;
 
 	public GameObject owner, stage, enemy, otherStar;
-	public PlayerScript ownerScript, enemyScript;
+	public PlayerScript enemyScript;
 
 	Collider2D coll, ownerColl, enemyColl, stageColl;
 
-	bool isHeld = true, isThrown = false;
+	bool isHeld = true, isThrown = false, isFalling = false;
 	int direction;
 	float dx, dy;
 
@@ -42,21 +42,46 @@ public class StarScript : MonoBehaviour {
 			this.GetComponent<SpriteRenderer>().enabled = true;
 			this.transform.position += (throwVector * direction);
 			if (coll.IsTouching(enemyColl)) {
-				// enemy.KnockBack();
 				isThrown = false;
-				dy = -0.01f;
+				isFalling = true;
+				dy = -fallSpeed;
 			}
-		} else /*if (!coll.IsTouching(stageColl))*/ {
-			transform.position += new Vector3(0, dy, 0);
+		} else if (isFalling) {
+			this.transform.position += new Vector3(0, dy, 0);
+			if (coll.IsTouching(stageColl)) {
+				isFalling = false;
+				dy = 0;
+			}
+		}
+
+		if (!isHeld && coll.IsTouching(ownerColl)) {
+			Retrieve();
 		}
 	}
 
-	void OnCollisionEnter2D(Collision2D coll) {
-		
+	void OnCollisionEnter2D(Collision2D col){
+		Rigidbody2D rbNinja = enemy.GetComponent<Rigidbody2D>();
+		Debug.Log ("Shuriken hit");
+
+		if (col.gameObject == enemy) { // account for falling star
+			enemyScript.KnockBack(direction);
+			Debug.Log ("Velocity has been changed");
+		}
+
 	}
 
 	public void Throw() {
 		isHeld = false;
 		isThrown = true;
+	}
+
+	public bool IsHeld() {
+		return isHeld;
+	}
+
+	public void Retrieve() {
+		isHeld = true;
+		isThrown = false;
+		isFalling = false;
 	}
 }

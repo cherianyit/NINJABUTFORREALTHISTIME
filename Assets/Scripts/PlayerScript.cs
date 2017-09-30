@@ -5,24 +5,23 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour {
 
 	public string left, right, up, down;
-	public float speed, jumpForce, gravity;
+	public float speed, jumpForce, gravity, knockback, knockbackSpeed;
 
 	public GameObject otherNinja, stage;
 	public StarScript star;
 
-	Rigidbody2D rb;
 	BoxCollider2D coll;
 	Transform tf;
 
 	Collider2D otherColl, stageColl;
 
-	bool isJumping = false, isHolding = true;
+	bool isJumping = false, isKnockedBack = false, knockbackRight;
+	int timesKnockedBack = 0;
 
 	float dx, dy;
 
 	// Use this for initialization
 	void Start () {
-		rb = this.GetComponent<Rigidbody2D>();
 		coll = this.GetComponent<BoxCollider2D>();
 		tf = this.transform;
 
@@ -35,39 +34,50 @@ public class PlayerScript : MonoBehaviour {
 		MoveAndCollide();
 		Jump();
 		Throw();
+
+		if (isKnockedBack) {
+			dx += timesKnockedBack * knockbackSpeed * (knockbackRight ? -1 : 1);
+			if (dx * (knockbackRight ? -1 : 1) > 0) {
+				dx = 0;
+				isKnockedBack = false;
+			}
+		}
 	}
 
 	void MoveAndCollide() {
-		if (Input.GetKey(left)) {
-			this.transform.localScale = new Vector3(-6, 6, 1);
-			if (coll.IsTouching(otherColl) && otherNinja.transform.position.x < tf.position.x 
-				&& Mathf.Abs(otherNinja.transform.position.y - tf.position.y) < tf.localScale.y * coll.size.y) {
-				dx = 0;
-				if (!coll.IsTouching(stageColl)) {
-					isJumping = true;
+		if (!isKnockedBack) {
+			if (Input.GetKey(left)) {
+				this.transform.localScale = new Vector3(-6, 6, 1);
+				if (coll.IsTouching(otherColl) && otherNinja.transform.position.x < tf.position.x
+				   && Mathf.Abs(otherNinja.transform.position.y - tf.position.y) < tf.localScale.y * coll.size.y) {
+					dx = 0;
+					if (!coll.IsTouching(stageColl)) {
+						isJumping = true;
+					}
+				} else {
+					dx = -speed;
 				}
-			} else {
-				dx = -speed;
 			}
-		}
-		if (Input.GetKey(right)) {
-			this.transform.localScale = new Vector3(6, 6, 1);
-			if (coll.IsTouching(otherColl) && otherNinja.transform.position.x > tf.position.x 
-				&& Mathf.Abs(otherNinja.transform.position.y - tf.position.y) < tf.localScale.y * coll.size.y) {
-				dx = 0;
-				if (!coll.IsTouching(stageColl)) {
-					isJumping = true;
+			if (Input.GetKey(right)) {
+				this.transform.localScale = new Vector3(6, 6, 1);
+				if (coll.IsTouching(otherColl) && otherNinja.transform.position.x > tf.position.x
+				   && Mathf.Abs(otherNinja.transform.position.y - tf.position.y) < tf.localScale.y * coll.size.y) {
+					dx = 0;
+					if (!coll.IsTouching(stageColl)) {
+						isJumping = true;
+					}
+				} else {
+					dx = speed;
 				}
-			} else {
-				dx = speed;
 			}
-		}
-		if (Input.GetKey(left) == Input.GetKey(right)) {
-			dx = 0;
-		}
-		if (Input.GetKey(up) && !isJumping) {
-			isJumping = true;
-			dy = jumpForce;
+			if (Input.GetKey(left) == Input.GetKey(right)) {
+				dx = 0;
+			}
+			if (Input.GetKey(up) && !isJumping && (coll.IsTouching(stageColl)
+			   || (coll.IsTouching(otherColl)))) {
+				isJumping = true;
+				dy = jumpForce;
+			}
 		}
 		tf.position += new Vector3(dx, 0, 0);
 	}
@@ -84,9 +94,15 @@ public class PlayerScript : MonoBehaviour {
 	}
 
 	void Throw() {
-		if (Input.GetKey(down) && isHolding) {
-			isHolding = false;
+		if (Input.GetKey(down) && star.IsHeld()) {
 			star.Throw();
 		}
+	}
+
+	public void KnockBack(int direction) {
+		timesKnockedBack++;
+		knockbackRight = (direction == 1);
+		dx = timesKnockedBack * direction * knockback;
+		isKnockedBack = true;
 	}
 }
