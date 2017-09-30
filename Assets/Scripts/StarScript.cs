@@ -41,11 +41,6 @@ public class StarScript : MonoBehaviour {
 			this.GetComponent<Collider2D>().enabled = true;
 			this.GetComponent<SpriteRenderer>().enabled = true;
 			this.transform.position += (throwVector * direction);
-			if (coll.IsTouching(enemyColl)) {
-				isThrown = false;
-				isFalling = true;
-				dy = -fallSpeed;
-			}
 
 			Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
 			if (pos.x <= 0.0 || 1.0 <= pos.x) {
@@ -67,6 +62,9 @@ public class StarScript : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D col){
 		if (col.gameObject == enemy) {
+			isThrown = false;
+			isFalling = true;
+			dy = -fallSpeed;
 			enemyScript.KnockBack(direction);
 		}
 		if (col.gameObject == otherStar) {
