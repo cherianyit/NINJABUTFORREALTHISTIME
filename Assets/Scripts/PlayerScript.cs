@@ -8,6 +8,7 @@ public class PlayerScript : MonoBehaviour {
 	public float speed, jumpForce, gravity, knockback, knockbackSpeed;
 
 	public GameObject otherNinja, stage;
+	public PlayerScript otherNinjaScript;
 	public StarScript star;
 
 	Rigidbody2D rb;
@@ -17,8 +18,10 @@ public class PlayerScript : MonoBehaviour {
 
 	bool isJumping = false, isKnockedBack = false, knockbackRight;
 	int timesKnockedBack = 0;
+	int lives = 3;
 
 	float dx, dy;
+	Vector3 initialPosition;
 
 	// double press manager
 	protected float ButtonCooler = 0.5f;
@@ -34,6 +37,8 @@ public class PlayerScript : MonoBehaviour {
 		rb = this.GetComponent<Rigidbody2D>();
 		coll = this.GetComponent<BoxCollider2D>();
 		tf = this.transform;
+
+		initialPosition = this.transform.position;
 
 		otherColl = otherNinja.GetComponent<Collider2D>();
 		stageColl = stage.GetComponent<Collider2D>();
@@ -51,6 +56,12 @@ public class PlayerScript : MonoBehaviour {
 				dx = 0;
 				isKnockedBack = false;
 			}
+		}
+
+		Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+		if (pos.y <= 0.0 || 1.0 <= pos.y) {
+			this.transform.position = (initialPosition + otherNinjaScript.GetInitialPosition()) / 2;
+			lives--;
 		}
 	}
 
@@ -129,8 +140,19 @@ public class PlayerScript : MonoBehaviour {
 
 	public void KnockBack(int direction) {
 		timesKnockedBack++;
+		if (timesKnockedBack >= 6) {
+			timesKnockedBack = 5;
+		}
 		knockbackRight = (direction == 1);
 		dx = timesKnockedBack * direction * knockback;
 		isKnockedBack = true;
+	}
+
+	public int GetLives() {
+		return lives;
+	}
+
+	public Vector3 GetInitialPosition() {
+		return initialPosition;
 	}
 }
