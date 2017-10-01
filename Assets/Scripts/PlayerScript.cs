@@ -10,15 +10,16 @@ public class PlayerScript : MonoBehaviour {
 	public GameObject otherNinja, stage, enemyStar;
 	public PlayerScript otherNinjaScript;
 	public StarScript star;
+    public bool isJumping = false;
 
-	public bool ninjaDied = false;
+    public bool ninjaDied = false;
 
 	BoxCollider2D coll;
 	Transform tf;
 
 	Collider2D otherColl, stageColl, enemyStarColl;
 
-	bool isJumping = false, isKnockedBack = false, knockbackRight;
+	bool  isKnockedBack = false, knockbackRight;
 	int timesKnockedBack = 0;
 	int lives = 3;
 
