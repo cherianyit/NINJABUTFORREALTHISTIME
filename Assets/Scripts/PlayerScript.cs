@@ -5,38 +5,50 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour {
 
 	public string left, right, up, down;
-	public float speed, jumpForce, gravity, knockback, knockbackSpeed;
+	public float speed, jumpForce, gravity, knockback, knockbackSpeed, dashWindow, dashMultiplier;
 
 	public GameObject otherNinja, stage, enemyStar;
 	public PlayerScript otherNinjaScript;
 	public StarScript star;
+    public bool isJumping = false;
 
-	public bool ninjaDied = false;
+    public bool ninjaDied = false;
 
 	BoxCollider2D coll;
 	Transform tf;
+	Rigidbody2D rb;
 
 	Collider2D otherColl, stageColl, enemyStarColl;
 
-	bool isJumping = false, isKnockedBack = false, knockbackRight;
+<<<<<<< HEAD
+	bool isJumping = false, isKnockedBack = false, isRunning = false, wasJustWalking = false, wasJustRunning = false;
+	bool knockbackRight, lastMoveRight;
+=======
+	bool  isKnockedBack = false, knockbackRight;
+>>>>>>> origin/proper-use-of-branches
 	int timesKnockedBack = 0;
 	int lives = 3;
+	int framesSinceLetGo = 0;
+	int framesOfLastWalk = 0;
 
 	float dx, dy;
 	Vector3 initialPosition;
+	Quaternion lastRotation;
 
 	// Use this for initialization
 	void Start () {
 		coll = this.GetComponent<BoxCollider2D>();
 		tf = this.transform;
+		rb = this.GetComponent<Rigidbody2D>();
 
 		initialPosition = this.transform.position;
 
 		otherColl = otherNinja.GetComponent<Collider2D>();
 		stageColl = stage.GetComponent<Collider2D>();
 		enemyStarColl = enemyStar.GetComponent<Collider2D>();
+		lastRotation = transform.rotation;
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		MoveAndCollide();
@@ -52,6 +64,14 @@ public class PlayerScript : MonoBehaviour {
 		}
 
 		Death();
+
+		if (coll.IsTouching(stageColl)) {
+			this.transform.rotation = stage.transform.rotation;
+		} else {
+			transform.rotation = lastRotation;
+		}
+
+		lastRotation = transform.rotation;
 	}
 
 	public void Death(){
@@ -70,7 +90,8 @@ public class PlayerScript : MonoBehaviour {
 	void MoveAndCollide() {
 		if (!isKnockedBack && lives > 0) {
 			if (Input.GetKey(left)) {
-				this.transform.localScale = new Vector3(-6, 6, 1);
+				this.transform.localScale = new Vector3(-Mathf.Abs(this.transform.localScale.x), 
+					this.transform.localScale.y, this.transform.localScale.z);
 				if (coll.IsTouching(otherColl) && otherNinja.transform.position.x < tf.position.x
 				   && Mathf.Abs(otherNinja.transform.position.y - tf.position.y) < tf.localScale.y * coll.size.y) {
 					dx = 0;
@@ -78,11 +99,26 @@ public class PlayerScript : MonoBehaviour {
 						isJumping = true;
 					}
 				} else {
-					dx = -speed;
+					if (!lastMoveRight && !wasJustRunning && (isRunning || 
+						(framesSinceLetGo > 0 && framesOfLastWalk <= dashWindow && framesSinceLetGo <= dashWindow))) {
+						isRunning = true;
+						dx = -speed * dashMultiplier;
+					} else {
+						dx = -speed;
+						wasJustRunning = false;
+						if (!wasJustWalking) {
+							framesOfLastWalk = 0;
+						}
+						wasJustWalking = true;
+						framesOfLastWalk++;
+					}
+					framesSinceLetGo = 0;
+					lastMoveRight = false;
 				}
 			}
 			if (Input.GetKey(right)) {
-				this.transform.localScale = new Vector3(6, 6, 1);
+				this.transform.localScale = new Vector3(Mathf.Abs(this.transform.localScale.x), 
+					this.transform.localScale.y, this.transform.localScale.z);
 				if (coll.IsTouching(otherColl) && otherNinja.transform.position.x > tf.position.x
 				   && Mathf.Abs(otherNinja.transform.position.y - tf.position.y) < tf.localScale.y * coll.size.y) {
 					dx = 0;
@@ -90,7 +126,21 @@ public class PlayerScript : MonoBehaviour {
 						isJumping = true;
 					}
 				} else {
-					dx = speed;
+					if (lastMoveRight && !wasJustRunning && (isRunning || 
+						(framesSinceLetGo > 0 && framesOfLastWalk <= dashWindow && framesSinceLetGo <= dashWindow))) {
+						isRunning = true;
+						dx = speed * dashMultiplier;
+					} else {
+						dx = speed;
+						wasJustRunning = false;
+						if (!wasJustWalking) {
+							framesOfLastWalk = 0;
+						}
+						wasJustWalking = true;
+						framesOfLastWalk++;
+					}
+					framesSinceLetGo = 0;
+					lastMoveRight = true;
 				}
 			}
 			if (Input.GetKey(left) == Input.GetKey(right)) {
@@ -100,6 +150,14 @@ public class PlayerScript : MonoBehaviour {
 				|| coll.IsTouching(otherColl) || coll.IsTouching(enemyStarColl))) {
 				isJumping = true;
 				dy = jumpForce;
+			}
+			if (!(Input.GetKey(left) || Input.GetKey(right))) {
+				if (isRunning) {
+					wasJustRunning = true;
+				}
+				isRunning = false;
+				wasJustWalking = false;
+				framesSinceLetGo++;
 			}
 		}
 		tf.position += new Vector3(dx, 0, 0);

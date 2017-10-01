@@ -14,6 +14,7 @@ public class StarScript : MonoBehaviour {
 	Rigidbody2D rb;
 
 	bool isHeld = true, isThrown = false, isFalling = false;
+    public bool isJumped = false;
 	int direction;
 	float dx, dy;
 
@@ -37,7 +38,26 @@ public class StarScript : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if(owner.GetComponent<PlayerScript>().ninjaDied){
+        if (owner.GetComponent<PlayerScript>().isJumping && isThrown)
+        {
+            isJumped = true;
+        }
+        else if (isThrown && isJumped)
+        {
+            isJumped = true;
+        }
+        else
+        {
+            isJumped = false;
+        }
+
+         if (coll.IsTouching(stageColl))
+        {
+            isJumped = false;
+            isThrown = false;
+        }
+
+        if (owner.GetComponent<PlayerScript>().ninjaDied){
 			isHeld = true;
 			owner.GetComponent<PlayerScript>().ninjaDied = false;
 			lastPos = owner.GetComponent<PlayerScript>().GetInitialPosition() + (offset * direction);
@@ -48,7 +68,7 @@ public class StarScript : MonoBehaviour {
 			this.GetComponent<Collider2D>().enabled = false;
 			this.GetComponent<SpriteRenderer>().enabled = false;
 			this.transform.position = owner.transform.position + (offset * direction);
-		} else if (isThrown) {
+		} else if (isThrown&&!isJumped) {
 			this.GetComponent<Collider2D>().enabled = true;
 			this.GetComponent<SpriteRenderer>().enabled = true;
 			this.transform.position += (throwVector * direction);
@@ -58,10 +78,27 @@ public class StarScript : MonoBehaviour {
 				direction *= -1;
 				this.transform.position += (throwVector * direction);
 			}
-		} else if (isFalling) {
+		}
+        else if (isThrown && isJumped)
+        {
+            this.GetComponent<Collider2D>().enabled = true;
+            this.GetComponent<SpriteRenderer>().enabled = true;
+            this.transform.position += new Vector3(direction * speed * (float)0.71, -speed * (float)0.71, 0);
+
+            Vector3 pos = Camera.main.WorldToViewportPoint(transform.position);
+            if (pos.x <= 0.0 || 1.0 <= pos.x)
+            {
+                direction *= -1;
+                this.transform.position += (new Vector3(direction * speed * (float)0.71, -speed * (float)0.71, 0) * direction);
+            }
+        }
+
+
+        else if (isFalling) {
 			this.transform.position += new Vector3(0, dy, 0);
 			if (coll.IsTouching(stageColl)) {
 				isFalling = false;
+                isJumped = false;
 				dy = 0;
 			}
 		} else {
@@ -81,6 +118,7 @@ public class StarScript : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D col){
 		if (col.gameObject == enemy && isThrown) {
 			isThrown = false;
+            
 			isFalling = true;
 			dy = -fallSpeed;
 			enemyScript.KnockBack(direction);
@@ -88,6 +126,7 @@ public class StarScript : MonoBehaviour {
 		if (col.gameObject == otherStar) {
 			direction *= -1;
 		}
+        
 	}
 
 	public void Throw() {
@@ -102,6 +141,7 @@ public class StarScript : MonoBehaviour {
 	public void Retrieve() {
 		isHeld = true;
 		isThrown = false;
+        isJumped = false;
 		isFalling = false;
 		this.GetComponent<SpriteRenderer>().enabled = false;
 		lastPos = owner.GetComponent<PlayerScript>().transform.position + (offset * direction);

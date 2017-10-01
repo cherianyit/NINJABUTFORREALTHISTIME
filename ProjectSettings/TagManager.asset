@@ -50,3 +50,6 @@ TagManager:
   - name: Stars
     uniqueID: 2991681699
     locked: 0
+  - name: GUI
+    uniqueID: 3460137253
+    locked: 0
